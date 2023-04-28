@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5" style="width: 90%;">
+    <!-- Csv file upload -->
+    <form action="#" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-auto">
+              <label for="csvFile" class="col-form-label"><strong style="font-size:20px;">Upload CSV File:</strong></label>
+            </div>
+            <div class="col">
+              <input class="form-control" name="file" type="file" id="formFile">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Upload</button>
+              </div>
+          </div>
+    </form>
+
+    <!-- Table -->
+    <table class="table table-bordered text-center mt-5">
+        <thead class="table-secondary">
+            <tr>
+                <th style="width: 14%;">Customer ID</th>
+                <th style="width: 16%;">First Name</th>
+                <th style="width: 16%;">Last Name</th>
+                <th style="width: 16%;">Email</th>
+                <th style="width: 16%;">Mobile</th>
+                <th style="width: 16%;">Address</th>
+                <th colspan="2" style="width: 6%;">Actions</th>
+            </tr>
+        </thead>
+        <tbody style="font-size:14px;">
+            {% for customer in customers %}
+
+            <tr class="text-td" id="chk_td">
+                <td id="top-table" label="Customer ID">{{ customer.customer_id }}</td>
+                <td id="responsive-border" label="First Name">{{ customer.first_name}}</td>
+                <td id="responsive-border" label="Last Name">{{ customer.last_name}}</td>
+                <td id="responsive-border" label="Email">{{ customer.email}}</td>
+                <td id="responsive-border" label="Mobile">{{ customer.mobile }}</td>
+                <td id="responsive-border" label="Address">{{ customer.address }}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm btn-action" title="Delete message" data-bs-toggle="modal" data-bs-target="#deleteModal{{ customer.pk }}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            <!-- Modal delete confirmation -->
+            {% include 'modals/delete.html' %}
+            {% empty %}
+                <td colspan='9'><strong class='text-danger'>No records found</strong></td>
+        </tbody>
+        {% endfor %}
+    </table>
+    <hr>
+
+    <!-- Pagination -->
+    <nav>
+        <div class="my-page">
+            {% if customers.has_other_pages %}
+                <ul class="pagination">
+                    {% if customers.has_previous %}
+                        <a href="?page=1 " class="btn btn-outline-secondary mb-4" style="border-radius: 1px; border: 1px solid #d3d3d3; font-size:11px;">First</a>
+
+                        <li class="page-item"><a class="page-link" href="?page={{ customers.previous_page_number }}" style="font-size:11px;"><i class="fas fa-angle-double-left"></i></a></li>
+                        {% else %}
+                        <li class="page-item disabled"></li>
+                        {% endif %}
+
+                        {% for i in customers.paginator.page_range %}
+                        {% if customers.number == i %}
+                        <li class="page-item active"><span class="page-link" style="font-size:11px;">{{ i }}<span class="sr-only"></span></span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}" style="font-size:11px;">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if customers.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ customers.next_page_number }}" style="font-size:11px;"><i class="fas fa-angle-double-right"></i></a></li>
+                        <a href="?page={{ customers.paginator.num_pages }} " class="btn btn-outline-secondary mb-4" style="border-radius: 1px; border: 1px solid #d3d3d3; border-left: none; font-size:11px;">Last</a>
+                        {% else %}
+                        <li class="page-item disabled"></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+    </nav>
+</div>
+
+{% endblock content %}
